@@ -1,0 +1,915 @@
+import {
+    Theme,
+    UISize,
+    ButtonStyleProps,
+    ButtonSizeProps,
+    ButtonVariant,
+    ButtonState,
+    ButtonSize,
+} from "@ui/theme.slint";
+import { Callbacks } from "callbacks.slint";
+
+export { Callbacks, Theme, ButtonStyleProps, ButtonSizeProps, ButtonVariant, ButtonState, ButtonSize }
+
+global CalcPalette {
+    out property <color> page: Theme.is-dark ? #000000 : #f6f5f2;
+    out property <color> number: Theme.is-dark ? #282828 : #ece9e4;
+    out property <color> number-pressed: Theme.is-dark ? #343434 : #ddd8cf;
+    out property <color> function: Theme.is-dark ? #5f5f5f : #d9d5ce;
+    out property <color> function-pressed: Theme.is-dark ? #707070 : #cbc5bb;
+    out property <color> scientific: Theme.is-dark ? #181818 : #e6e3dc;
+    out property <color> scientific-pressed: Theme.is-dark ? #262626 : #d8d3ca;
+    out property <color> toggle: Theme.is-dark ? #121212 : #e8e5df;
+    out property <color> operator: #f79a23;
+    out property <color> operator-pressed: #ffb24d;
+    out property <color> text: Theme.is-dark ? #ffffff : #191814;
+    out property <color> muted-text: Theme.is-dark ? #8d8d92 : #6f6b65;
+    out property <color> border: Theme.is-dark ? #343434 : #cac4ba;
+    out property <color> selected: Theme.is-dark ? #686868 : #ffffff;
+    out property <color> selected-pressed: Theme.is-dark ? #787878 : #eeeae4;
+}
+
+component ModeSegment inherits Rectangle {
+    in property <string> input-id;
+    in property <string> label;
+    in property <bool> selected;
+
+    background: selected ? CalcPalette.selected : transparent;
+    border-radius: 15px;
+    clip: true;
+
+    Text {
+        width: parent.width;
+        height: parent.height;
+        text: root.label;
+        color: selected ? CalcPalette.text : CalcPalette.muted-text;
+        font-family: "Montserrat";
+        font-size: 13px;
+        font-weight: selected ? 700 : 600;
+        horizontal-alignment: center;
+        vertical-alignment: center;
+        overflow: elide;
+    }
+
+    TouchArea {
+        width: parent.width;
+        height: parent.height;
+        clicked => {
+            Callbacks.input(root.input-id);
+        }
+    }
+}
+
+component ModeToggle inherits Rectangle {
+    in property <bool> scientific-mode;
+
+    height: 34px;
+    background: CalcPalette.toggle;
+    border-color: CalcPalette.border;
+    border-width: 1px;
+    border-radius: 17px;
+    clip: true;
+
+    HorizontalLayout {
+        padding: 2px;
+        spacing: 2px;
+
+        ModeSegment {
+            input-id: "mode-basic";
+            label: "Basic";
+            selected: !root.scientific-mode;
+            horizontal-stretch: 1;
+        }
+
+        ModeSegment {
+            input-id: "mode-scientific";
+            label: "Scientific";
+            selected: root.scientific-mode;
+            horizontal-stretch: 1;
+        }
+    }
+}
+
+component CalcButton inherits Rectangle {
+    in property <string> input-id;
+    in property <string> label;
+    in property <color> fill: CalcPalette.number;
+    in property <color> pressed-fill: CalcPalette.number-pressed;
+    in property <color> label-color: CalcPalette.text;
+    in property <color> stroke-color: CalcPalette.border.with-alpha(Theme.is-dark ? 0.72 : 0.92);
+    in property <length> label-size: 32px;
+    in property <int> label-weight: 500;
+    in property <length> corner-radius: root.height / 2;
+    in property <length> padding-horizontal: 4px;
+
+    background: transparent;
+    clip: false;
+
+    surface := Rectangle {
+        x: 0px;
+        y: 0px;
+        width: parent.width;
+        height: parent.height;
+        background: root.fill;
+        border-color: root.stroke-color;
+        border-width: 1px;
+        border-radius: root.corner-radius;
+        clip: true;
+
+        Text {
+            x: root.padding-horizontal;
+            y: 0px;
+            width: parent.width - root.padding-horizontal * 2;
+            height: parent.height;
+            text: root.label;
+            color: root.label-color;
+            font-family: "Montserrat";
+            font-size: root.label-size;
+            font-weight: root.label-weight;
+            horizontal-alignment: center;
+            vertical-alignment: center;
+            overflow: elide;
+        }
+    }
+
+    touch := TouchArea {
+        x: -3px;
+        y: -3px;
+        width: parent.width + 6px;
+        height: parent.height + 6px;
+
+        clicked => {
+            Callbacks.input(root.input-id);
+        }
+    }
+}
+
+component CalcIconButton inherits Rectangle {
+    in property <string> input-id;
+    in property <image> icon;
+    in property <color> fill: CalcPalette.function;
+    in property <color> pressed-fill: CalcPalette.function-pressed;
+    in property <color> icon-color: CalcPalette.text;
+    in property <color> stroke-color: CalcPalette.border.with-alpha(Theme.is-dark ? 0.72 : 0.92);
+    in property <length> icon-size: 34px;
+    in property <length> corner-radius: root.height / 2;
+
+    background: transparent;
+    clip: false;
+
+    surface := Rectangle {
+        x: 0px;
+        y: 0px;
+        width: parent.width;
+        height: parent.height;
+        background: root.fill;
+        border-color: root.stroke-color;
+        border-width: 1px;
+        border-radius: root.corner-radius;
+        clip: true;
+
+        Image {
+            x: (parent.width - root.icon-size) / 2;
+            y: (parent.height - root.icon-size) / 2;
+            width: root.icon-size;
+            height: root.icon-size;
+            source: root.icon;
+            colorize: root.icon-color;
+        }
+    }
+
+    touch := TouchArea {
+        x: -3px;
+        y: -3px;
+        width: parent.width + 6px;
+        height: parent.height + 6px;
+
+        clicked => {
+            Callbacks.input(root.input-id);
+        }
+    }
+}
+
+component NumberButton inherits CalcButton {
+    fill: CalcPalette.number;
+    pressed-fill: CalcPalette.number-pressed;
+    label-color: CalcPalette.text;
+    label-size: 42px;
+}
+
+component CompactNumberButton inherits CalcButton {
+    fill: CalcPalette.number;
+    pressed-fill: CalcPalette.number-pressed;
+    label-color: CalcPalette.text;
+    label-size: 26px;
+}
+
+component FunctionButton inherits CalcButton {
+    fill: CalcPalette.function;
+    pressed-fill: CalcPalette.function-pressed;
+    label-color: CalcPalette.text;
+    label-size: 34px;
+}
+
+component CompactFunctionButton inherits CalcButton {
+    fill: CalcPalette.function;
+    pressed-fill: CalcPalette.function-pressed;
+    label-color: CalcPalette.text;
+    label-size: 24px;
+}
+
+component ScientificButton inherits CalcButton {
+    fill: CalcPalette.scientific;
+    pressed-fill: CalcPalette.scientific-pressed;
+    label-color: CalcPalette.text;
+    label-size: 18px;
+    padding-horizontal: 0px;
+}
+
+component ScientificToggleButton inherits ScientificButton {
+    in property <bool> selected;
+    fill: selected ? CalcPalette.selected : CalcPalette.scientific;
+    pressed-fill: selected ? CalcPalette.selected-pressed : CalcPalette.scientific-pressed;
+}
+
+component IndexedRootButton inherits Rectangle {
+    in property <string> input-id;
+    in property <string> index-label;
+    in property <length> radical-size: 24px;
+    in property <length> index-size: 12px;
+
+    background: transparent;
+    clip: false;
+
+    property <length> label-width: index-measure.preferred-width * 2 + radical-measure.preferred-width;
+    property <length> label-height: max(root.radical-size * 1.4, root.index-size * 2.0);
+
+    index-measure := Text {
+        visible: false;
+        text: root.index-label;
+        font-family: "Montserrat";
+        font-size: root.index-size;
+        font-weight: 500;
+    }
+
+    radical-measure := Text {
+        visible: false;
+        text: "√x";
+        font-family: "Montserrat";
+        font-size: root.radical-size;
+        font-weight: 500;
+    }
+
+    surface := Rectangle {
+        x: 0px;
+        y: 0px;
+        width: parent.width;
+        height: parent.height;
+        background: CalcPalette.scientific;
+        border-color: CalcPalette.border.with-alpha(Theme.is-dark ? 0.72 : 0.92);
+        border-width: 1px;
+        border-radius: root.height / 2;
+        clip: true;
+
+        Rectangle {
+            x: (parent.width - root.label-width) / 2;
+            y: (parent.height - root.label-height) / 2 + 1px;
+            width: root.label-width;
+            height: root.label-height;
+            background: transparent;
+
+            Text {
+                x: index-measure.preferred-width;
+                y: root.index-size * 0.7;
+                width: index-measure.preferred-width;
+                height: root.index-size * 1.4;
+                text: root.index-label;
+                color: CalcPalette.text;
+                font-family: "Montserrat";
+                font-size: root.index-size;
+                font-weight: 500;
+                horizontal-alignment: right;
+                vertical-alignment: center;
+            }
+
+            Text {
+                x: index-measure.preferred-width * 2;
+                y: root.index-size * 0.36;
+                width: radical-measure.preferred-width;
+                height: root.radical-size * 1.2;
+                text: "√x";
+                color: CalcPalette.text;
+                font-family: "Montserrat";
+                font-size: root.radical-size;
+                font-weight: 500;
+                horizontal-alignment: left;
+                vertical-alignment: center;
+            }
+        }
+    }
+
+    touch := TouchArea {
+        x: -3px;
+        y: -3px;
+        width: parent.width + 6px;
+        height: parent.height + 6px;
+
+        clicked => {
+            Callbacks.input(root.input-id);
+        }
+    }
+}
+
+component IndexedLogButton inherits Rectangle {
+    in property <string> input-id;
+    in property <string> index-label;
+    in property <length> base-size: 18px;
+    in property <length> index-size: 10px;
+
+    background: transparent;
+    clip: false;
+
+    property <length> label-width: base-measure.preferred-width + index-measure.preferred-width + 1px;
+    property <length> label-height: root.base-size * 1.45;
+
+    base-measure := Text {
+        visible: false;
+        text: "log";
+        font-family: "Montserrat";
+        font-size: root.base-size;
+        font-weight: 500;
+    }
+
+    index-measure := Text {
+        visible: false;
+        text: root.index-label;
+        font-family: "Montserrat";
+        font-size: root.index-size;
+        font-weight: 500;
+    }
+
+    surface := Rectangle {
+        x: 0px;
+        y: 0px;
+        width: parent.width;
+        height: parent.height;
+        background: CalcPalette.scientific;
+        border-color: CalcPalette.border.with-alpha(Theme.is-dark ? 0.72 : 0.92);
+        border-width: 1px;
+        border-radius: root.height / 2;
+        clip: true;
+
+        Rectangle {
+            x: (parent.width - root.label-width) / 2;
+            y: (parent.height - root.label-height) / 2 + 1px;
+            width: root.label-width;
+            height: root.label-height;
+            background: transparent;
+
+            Text {
+                x: 0px;
+                y: 0px;
+                width: base-measure.preferred-width;
+                height: root.base-size * 1.25;
+                text: "log";
+                color: CalcPalette.text;
+                font-family: "Montserrat";
+                font-size: root.base-size;
+                font-weight: 500;
+                horizontal-alignment: left;
+                vertical-alignment: center;
+            }
+
+            Text {
+                x: base-measure.preferred-width + 1px;
+                y: root.base-size * 0.56;
+                width: index-measure.preferred-width;
+                height: root.index-size * 1.35;
+                text: root.index-label;
+                color: CalcPalette.text;
+                font-family: "Montserrat";
+                font-size: root.index-size;
+                font-weight: 500;
+                horizontal-alignment: left;
+                vertical-alignment: center;
+            }
+        }
+    }
+
+    touch := TouchArea {
+        x: -3px;
+        y: -3px;
+        width: parent.width + 6px;
+        height: parent.height + 6px;
+
+        clicked => {
+            Callbacks.input(root.input-id);
+        }
+    }
+}
+
+component SuperscriptScientificButton inherits Rectangle {
+    in property <string> input-id;
+    in property <string> base-label;
+    in property <string> exponent-label: "-1";
+    in property <length> base-size: 20px;
+    in property <length> exponent-size: 12px;
+
+    background: transparent;
+    clip: false;
+
+    property <length> label-width: base-measure.preferred-width + exponent-measure.preferred-width + 2px;
+    property <length> label-height: max(root.base-size * 1.22, root.exponent-size * 2.0);
+
+    base-measure := Text {
+        visible: false;
+        text: root.base-label;
+        font-family: "Montserrat";
+        font-size: root.base-size;
+        font-weight: 500;
+    }
+
+    exponent-measure := Text {
+        visible: false;
+        text: root.exponent-label;
+        font-family: "Montserrat";
+        font-size: root.exponent-size;
+        font-weight: 500;
+    }
+
+    surface := Rectangle {
+        x: 0px;
+        y: 0px;
+        width: parent.width;
+        height: parent.height;
+        background: CalcPalette.scientific;
+        border-color: CalcPalette.border.with-alpha(Theme.is-dark ? 0.72 : 0.92);
+        border-width: 1px;
+        border-radius: root.height / 2;
+        clip: true;
+
+        Rectangle {
+            x: (parent.width - root.label-width) / 2;
+            y: (parent.height - root.label-height) / 2 + 1px;
+            width: root.label-width;
+            height: root.label-height;
+            background: transparent;
+
+            Text {
+                x: 0px;
+                y: root.exponent-size * 0.42;
+                width: base-measure.preferred-width;
+                height: root.base-size * 1.22;
+                text: root.base-label;
+                color: CalcPalette.text;
+                font-family: "Montserrat";
+                font-size: root.base-size;
+                font-weight: 500;
+                horizontal-alignment: right;
+                vertical-alignment: center;
+            }
+
+            Text {
+                x: base-measure.preferred-width + 2px;
+                y: 0px;
+                width: exponent-measure.preferred-width;
+                height: root.exponent-size * 1.35;
+                text: root.exponent-label;
+                color: CalcPalette.text;
+                font-family: "Montserrat";
+                font-size: root.exponent-size;
+                font-weight: 500;
+                horizontal-alignment: left;
+                vertical-alignment: center;
+            }
+        }
+    }
+
+    touch := TouchArea {
+        x: -3px;
+        y: -3px;
+        width: parent.width + 6px;
+        height: parent.height + 6px;
+
+        clicked => {
+            Callbacks.input(root.input-id);
+        }
+    }
+}
+
+component InverseScientificButton inherits SuperscriptScientificButton {
+    exponent-label: "-1";
+}
+
+component PowerScientificButton inherits SuperscriptScientificButton {
+    base-size: 22px;
+    exponent-size: 12px;
+}
+
+component OperatorButton inherits CalcButton {
+    fill: CalcPalette.operator;
+    pressed-fill: CalcPalette.operator-pressed;
+    label-color: #ffffff;
+    label-size: 42px;
+    label-weight: 500;
+    stroke-color: CalcPalette.operator-pressed.with-alpha(0.75);
+}
+
+component CompactOperatorButton inherits OperatorButton {
+    label-size: 28px;
+}
+
+component BasicKeypad inherits Rectangle {
+    in property <string> clear-label: "AC";
+    property <length> gap: 10px;
+    property <length> key-width: 107px;
+    property <length> key-height: 102px;
+
+    height: key-height * 5 + gap * 4;
+
+    VerticalLayout {
+        spacing: root.gap;
+
+        HorizontalLayout {
+            alignment: center;
+            spacing: root.gap;
+            CalcIconButton { width: root.key-width; height: root.key-height; input-id: "backspace"; icon: @image-url("../resources/backspace.svg"); icon-size: 42px; }
+            FunctionButton { width: root.key-width; height: root.key-height; input-id: "clear"; label: root.clear-label; }
+            FunctionButton { width: root.key-width; height: root.key-height; input-id: "percent"; label: "%"; }
+            OperatorButton { width: root.key-width; height: root.key-height; input-id: "divide"; label: "÷"; }
+        }
+
+        HorizontalLayout {
+            alignment: center;
+            spacing: root.gap;
+            NumberButton { width: root.key-width; height: root.key-height; input-id: "7"; label: "7"; }
+            NumberButton { width: root.key-width; height: root.key-height; input-id: "8"; label: "8"; }
+            NumberButton { width: root.key-width; height: root.key-height; input-id: "9"; label: "9"; }
+            OperatorButton { width: root.key-width; height: root.key-height; input-id: "multiply"; label: "×"; }
+        }
+
+        HorizontalLayout {
+            alignment: center;
+            spacing: root.gap;
+            NumberButton { width: root.key-width; height: root.key-height; input-id: "4"; label: "4"; }
+            NumberButton { width: root.key-width; height: root.key-height; input-id: "5"; label: "5"; }
+            NumberButton { width: root.key-width; height: root.key-height; input-id: "6"; label: "6"; }
+            OperatorButton { width: root.key-width; height: root.key-height; input-id: "minus"; label: "−"; }
+        }
+
+        HorizontalLayout {
+            alignment: center;
+            spacing: root.gap;
+            NumberButton { width: root.key-width; height: root.key-height; input-id: "1"; label: "1"; }
+            NumberButton { width: root.key-width; height: root.key-height; input-id: "2"; label: "2"; }
+            NumberButton { width: root.key-width; height: root.key-height; input-id: "3"; label: "3"; }
+            OperatorButton { width: root.key-width; height: root.key-height; input-id: "plus"; label: "+"; }
+        }
+
+        HorizontalLayout {
+            alignment: center;
+            spacing: root.gap;
+            FunctionButton { width: root.key-width; height: root.key-height; input-id: "sign"; label: "±"; }
+            NumberButton { width: root.key-width; height: root.key-height; input-id: "0"; label: "0"; }
+            NumberButton { width: root.key-width; height: root.key-height; input-id: "decimal"; label: "."; }
+            OperatorButton { width: root.key-width; height: root.key-height; input-id: "equals"; label: "="; }
+        }
+    }
+}
+
+component ScientificFunctionGrid inherits Rectangle {
+    in property <bool> second-mode;
+    in property <bool> radians-mode;
+    property <length> gap: 7px;
+    property <length> key-width: 71px;
+    property <length> key-height: 50px;
+
+    height: key-height * 5 + gap * 4;
+
+    VerticalLayout {
+        spacing: root.gap;
+
+        HorizontalLayout {
+            alignment: center;
+            spacing: root.gap;
+            ScientificButton { width: root.key-width; height: root.key-height; input-id: "open"; label: "("; }
+            ScientificButton { width: root.key-width; height: root.key-height; input-id: "close"; label: ")"; }
+            ScientificButton { width: root.key-width; height: root.key-height; input-id: "mc"; label: "mc"; }
+            ScientificButton { width: root.key-width; height: root.key-height; input-id: "mplus"; label: "m+"; }
+            ScientificButton { width: root.key-width; height: root.key-height; input-id: "mminus"; label: "m−"; }
+            ScientificButton { width: root.key-width; height: root.key-height; input-id: "mrecall"; label: "mr"; }
+        }
+
+        HorizontalLayout {
+            alignment: center;
+            spacing: root.gap;
+            ScientificToggleButton { width: root.key-width; height: root.key-height; input-id: "second"; label: "2nd"; selected: root.second-mode; }
+            PowerScientificButton { width: root.key-width; height: root.key-height; input-id: "square"; base-label: "x"; exponent-label: "2"; }
+            PowerScientificButton { width: root.key-width; height: root.key-height; input-id: "cube"; base-label: "x"; exponent-label: "3"; }
+            PowerScientificButton { width: root.key-width; height: root.key-height; input-id: "power"; base-label: "x"; exponent-label: "y"; }
+            if !root.second-mode: PowerScientificButton { width: root.key-width; height: root.key-height; input-id: "exp"; base-label: "e"; exponent-label: "x"; }
+            if root.second-mode: PowerScientificButton { width: root.key-width; height: root.key-height; input-id: "ypower"; base-label: "y"; exponent-label: "x"; }
+            if !root.second-mode: PowerScientificButton { width: root.key-width; height: root.key-height; input-id: "tenpower"; base-label: "10"; exponent-label: "x"; }
+            if root.second-mode: PowerScientificButton { width: root.key-width; height: root.key-height; input-id: "twopower"; base-label: "2"; exponent-label: "x"; }
+        }
+
+        HorizontalLayout {
+            alignment: center;
+            spacing: root.gap;
+            ScientificButton { width: root.key-width; height: root.key-height; input-id: "reciprocal"; label: "1/x"; }
+            IndexedRootButton { width: root.key-width; height: root.key-height; input-id: "sqrt"; index-label: "2"; }
+            IndexedRootButton { width: root.key-width; height: root.key-height; input-id: "cbrt"; index-label: "3"; }
+            IndexedRootButton { width: root.key-width; height: root.key-height; input-id: "yroot"; index-label: "y"; }
+            if !root.second-mode: ScientificButton { width: root.key-width; height: root.key-height; input-id: "ln"; label: "ln"; }
+            if root.second-mode: IndexedLogButton { width: root.key-width; height: root.key-height; input-id: "logy"; index-label: "y"; }
+            if !root.second-mode: IndexedLogButton { width: root.key-width; height: root.key-height; input-id: "log10"; index-label: "10"; }
+            if root.second-mode: IndexedLogButton { width: root.key-width; height: root.key-height; input-id: "log2"; index-label: "2"; }
+        }
+
+        HorizontalLayout {
+            alignment: center;
+            spacing: root.gap;
+            ScientificButton { width: root.key-width; height: root.key-height; input-id: "factorial"; label: "x!"; }
+            if !root.second-mode: ScientificButton { width: root.key-width; height: root.key-height; input-id: "sin"; label: "sin"; }
+            if root.second-mode: InverseScientificButton { width: root.key-width; height: root.key-height; input-id: "asin"; base-label: "sin"; }
+            if !root.second-mode: ScientificButton { width: root.key-width; height: root.key-height; input-id: "cos"; label: "cos"; }
+            if root.second-mode: InverseScientificButton { width: root.key-width; height: root.key-height; input-id: "acos"; base-label: "cos"; }
+            if !root.second-mode: ScientificButton { width: root.key-width; height: root.key-height; input-id: "tan"; label: "tan"; }
+            if root.second-mode: InverseScientificButton { width: root.key-width; height: root.key-height; input-id: "atan"; base-label: "tan"; }
+            ScientificButton { width: root.key-width; height: root.key-height; input-id: "constant-e"; label: "e"; }
+            ScientificButton { width: root.key-width; height: root.key-height; input-id: "ee"; label: "EE"; }
+        }
+
+        HorizontalLayout {
+            alignment: center;
+            spacing: root.gap;
+            ScientificButton { width: root.key-width; height: root.key-height; input-id: "rand"; label: "Rand"; }
+            if !root.second-mode: ScientificButton { width: root.key-width; height: root.key-height; input-id: "sinh"; label: "sinh"; }
+            if root.second-mode: InverseScientificButton { width: root.key-width; height: root.key-height; input-id: "asinh"; base-label: "sinh"; base-size: 17px; exponent-size: 11px; }
+            if !root.second-mode: ScientificButton { width: root.key-width; height: root.key-height; input-id: "cosh"; label: "cosh"; }
+            if root.second-mode: InverseScientificButton { width: root.key-width; height: root.key-height; input-id: "acosh"; base-label: "cosh"; base-size: 17px; exponent-size: 11px; }
+            if !root.second-mode: ScientificButton { width: root.key-width; height: root.key-height; input-id: "tanh"; label: "tanh"; }
+            if root.second-mode: InverseScientificButton { width: root.key-width; height: root.key-height; input-id: "atanh"; base-label: "tanh"; base-size: 17px; exponent-size: 11px; }
+            ScientificButton { width: root.key-width; height: root.key-height; input-id: "pi"; label: "π"; }
+            ScientificToggleButton { width: root.key-width; height: root.key-height; input-id: "angle"; label: root.radians-mode ? "Deg" : "Rad"; selected: root.radians-mode; }
+        }
+    }
+}
+
+component CompactNumericGrid inherits Rectangle {
+    in property <string> clear-label: "AC";
+    property <length> gap: 7px;
+    property <length> key-width: 110px;
+    property <length> key-height: 54px;
+
+    height: key-height * 5 + gap * 4;
+
+    VerticalLayout {
+        spacing: root.gap;
+
+        HorizontalLayout {
+            alignment: center;
+            spacing: root.gap;
+            CalcIconButton { width: root.key-width; height: root.key-height; input-id: "backspace"; icon: @image-url("../resources/backspace.svg"); icon-size: 28px; }
+            CompactFunctionButton { width: root.key-width; height: root.key-height; input-id: "clear"; label: root.clear-label; }
+            CompactFunctionButton { width: root.key-width; height: root.key-height; input-id: "percent"; label: "%"; }
+            CompactOperatorButton { width: root.key-width; height: root.key-height; input-id: "divide"; label: "÷"; }
+        }
+
+        HorizontalLayout {
+            alignment: center;
+            spacing: root.gap;
+            CompactNumberButton { width: root.key-width; height: root.key-height; input-id: "7"; label: "7"; }
+            CompactNumberButton { width: root.key-width; height: root.key-height; input-id: "8"; label: "8"; }
+            CompactNumberButton { width: root.key-width; height: root.key-height; input-id: "9"; label: "9"; }
+            CompactOperatorButton { width: root.key-width; height: root.key-height; input-id: "multiply"; label: "×"; }
+        }
+
+        HorizontalLayout {
+            alignment: center;
+            spacing: root.gap;
+            CompactNumberButton { width: root.key-width; height: root.key-height; input-id: "4"; label: "4"; }
+            CompactNumberButton { width: root.key-width; height: root.key-height; input-id: "5"; label: "5"; }
+            CompactNumberButton { width: root.key-width; height: root.key-height; input-id: "6"; label: "6"; }
+            CompactOperatorButton { width: root.key-width; height: root.key-height; input-id: "minus"; label: "−"; }
+        }
+
+        HorizontalLayout {
+            alignment: center;
+            spacing: root.gap;
+            CompactNumberButton { width: root.key-width; height: root.key-height; input-id: "1"; label: "1"; }
+            CompactNumberButton { width: root.key-width; height: root.key-height; input-id: "2"; label: "2"; }
+            CompactNumberButton { width: root.key-width; height: root.key-height; input-id: "3"; label: "3"; }
+            CompactOperatorButton { width: root.key-width; height: root.key-height; input-id: "plus"; label: "+"; }
+        }
+
+        HorizontalLayout {
+            alignment: center;
+            spacing: root.gap;
+            CompactFunctionButton { width: root.key-width; height: root.key-height; input-id: "sign"; label: "±"; }
+            CompactNumberButton { width: root.key-width; height: root.key-height; input-id: "0"; label: "0"; }
+            CompactNumberButton { width: root.key-width; height: root.key-height; input-id: "decimal"; label: "."; }
+            CompactOperatorButton { width: root.key-width; height: root.key-height; input-id: "equals"; label: "="; }
+        }
+    }
+}
+
+component ScientificKeypad inherits Rectangle {
+    in property <bool> second-mode;
+    in property <bool> radians-mode;
+    in property <string> clear-label: "AC";
+    property <length> function-height: 50px * 5 + 7px * 4;
+    property <length> numeric-height: 54px * 5 + 7px * 4;
+    height: function-height + numeric-height + 8px;
+
+    VerticalLayout {
+        spacing: 8px;
+
+        HorizontalLayout {
+            height: root.function-height;
+            alignment: center;
+
+            functions := ScientificFunctionGrid {
+                width: 461px;
+                second-mode: root.second-mode;
+                radians-mode: root.radians-mode;
+            }
+        }
+
+        HorizontalLayout {
+            height: root.numeric-height;
+            alignment: center;
+
+            numbers := CompactNumericGrid {
+                width: 461px;
+                clear-label: root.clear-label;
+            }
+        }
+    }
+}
+
+export component AppWindow inherits Window {
+    title: "Calculator";
+    preferred-width: 480px;
+    preferred-height: 800px;
+    background: CalcPalette.page;
+
+    in-out property <string> primary-text: "0";
+    in-out property <string> secondary-text: "";
+    in-out property <bool> scientific-mode: false;
+    in-out property <bool> second-mode: false;
+    in-out property <bool> radians-mode: false;
+    in-out property <string> clear-label: "AC";
+    in-out property <int> primary-count: 1;
+    in-out property <int> secondary-count: 0;
+    property <length> page-gap: root.scientific-mode ? 7px : 10px;
+    property <length> stack-gap: root.scientific-mode ? 4px : 6px;
+    property <length> formula-gap: 3px;
+
+    function formula-size() -> length {
+        if root.secondary-count <= 18 {
+            return 22px;
+        }
+        if root.secondary-count <= 28 {
+            return 18px;
+        }
+        if root.secondary-count <= 40 {
+            return 14px;
+        }
+        if root.secondary-count <= 56 {
+            return 11px;
+        }
+        return 8px;
+    }
+
+    function answer-size() -> length {
+        if root.primary-count <= 8 {
+            return root.scientific-mode ? 62px : 80px;
+        }
+        if root.primary-count <= 12 {
+            return root.scientific-mode ? 52px : 66px;
+        }
+        if root.primary-count <= 16 {
+            return root.scientific-mode ? 42px : 52px;
+        }
+        if root.primary-count <= 22 {
+            return root.scientific-mode ? 33px : 40px;
+        }
+        return root.scientific-mode ? 26px : 32px;
+    }
+
+    function primary-display-height() -> length {
+        if root.primary-count <= 8 {
+            return root.scientific-mode ? 82px : 104px;
+        }
+        if root.primary-count <= 12 {
+            return root.scientific-mode ? 70px : 88px;
+        }
+        if root.primary-count <= 16 {
+            return root.scientific-mode ? 58px : 70px;
+        }
+        if root.primary-count <= 22 {
+            return root.scientific-mode ? 48px : 56px;
+        }
+        return root.scientific-mode ? 40px : 46px;
+    }
+
+    Rectangle {
+        width: parent.width;
+        height: parent.height;
+        background: CalcPalette.page;
+
+        VerticalLayout {
+            width: parent.width;
+            height: parent.height;
+            padding-left: root.page-gap;
+            padding-right: root.page-gap;
+            padding-top: 10px + UISize.control-center-status-bar-height;
+            padding-bottom: root.page-gap;
+            spacing: root.stack-gap;
+
+            Rectangle {
+                width: 100%;
+                height: 36px;
+                background: transparent;
+
+                HorizontalLayout {
+                    alignment: center;
+
+                    Rectangle {
+                        horizontal-stretch: 1;
+                    }
+
+                    ModeToggle {
+                        width: 188px;
+                        scientific-mode: root.scientific-mode;
+                    }
+                }
+            }
+
+            Rectangle {
+                width: 100%;
+                height: root.scientific-mode ? 114px : 136px;
+                background: transparent;
+
+                primary-display := Text {
+                    x: 0px;
+                    y: parent.height - self.height;
+                    width: parent.width;
+                    height: root.primary-display-height();
+                    text: root.primary-text;
+                    color: CalcPalette.text;
+                    font-family: "Montserrat";
+                    font-size: root.answer-size();
+                    font-weight: 500;
+                    horizontal-alignment: right;
+                    vertical-alignment: center;
+                    overflow: elide;
+                }
+
+                Text {
+                    x: 0px;
+                    y: parent.height - primary-display.height - self.height - root.formula-gap;
+                    width: parent.width;
+                    height: 28px;
+                    visible: root.secondary-text != "";
+                    text: root.secondary-text;
+                    color: CalcPalette.muted-text;
+                    font-family: "Montserrat";
+                    font-size: root.formula-size();
+                    font-weight: 500;
+                    horizontal-alignment: right;
+                    vertical-alignment: center;
+                    overflow: elide;
+                }
+
+                Text {
+                    x: 0px;
+                    y: parent.height - primary-display.height + primary-display.height * 0.62;
+                    width: 72px;
+                    height: 28px;
+                    visible: root.scientific-mode && root.radians-mode;
+                    text: "Rad";
+                    color: CalcPalette.text;
+                    font-family: "Montserrat";
+                    font-size: 17px;
+                    font-weight: 500;
+                    horizontal-alignment: left;
+                    vertical-alignment: center;
+                }
+            }
+
+            if !root.scientific-mode: BasicKeypad {
+                width: 100%;
+                clear-label: root.clear-label;
+            }
+
+            if root.scientific-mode: ScientificKeypad {
+                width: 100%;
+                second-mode: root.second-mode;
+                radians-mode: root.radians-mode;
+                clear-label: root.clear-label;
+            }
+        }
+    }
+}

@@ -1,0 +1,18 @@
+# Foundation application configuration
+app-name = "Calculator"
+friendly-app-name = "Calculator"
+launcher-app-name = "Calculator"
+description = "A new KeyOS calculator app"
+icon = "resources/icon.svg"
+app-id = "0x78be76408256ad1808ea89b7c0a61fc9"
+version = "0.1.0"
+min-keyos-version = "1.0.0"
+signing-identity = "Foundation Devices, Inc."
+
+[publisher]
+name = "Foundation Devices, Inc."
+contact-email = "hello@foundation.xyz"
+support-url = "https://foundation.xyz"
+
+[permissions]
+template = ["gui-app"]
