@@ -6,9 +6,9 @@ use std::rc::Rc;
 use std::time::Instant;
 
 use calculator::Calculator;
-use slint_keyos_platform::{app_minimal, slint::SharedString};
+use slint_keyos_platform::{app_ui2, slint::SharedString};
 
-app_minimal!("Calculator");
+app_ui2!("Calculator");
 
 fn app_main(_cx: AppContext, ui: AppWindow) {
     log_server::init_wait(env!("CARGO_CRATE_NAME")).unwrap();

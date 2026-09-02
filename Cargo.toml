@@ -4,14 +4,14 @@ version = "0.1.0"
 edition = "2021"
 
 [workspace]
+exclude = [".foundation-sdk"]
 
 [dependencies]
 log = "0.4"
-log-server = { package = "xous-api-log", path = "/Users/kenc/.foundation/sdk/current/lib/keyos/xous/api/log" }
-server = { path = "/Users/kenc/.foundation/sdk/current/lib/keyos/server" }
-slint-keyos-platform = { path = "/Users/kenc/.foundation/sdk/current/lib/keyos/slint-keyos-platform/runtime" }
-foundation-themes = { path = "/Users/kenc/.foundation/sdk/current/lib/keyos/sdk/crates/foundation-themes" }
+log-server = { package = "xous-api-log", path = ".foundation-sdk/current/lib/keyos/xous/api/log" }
+server = { path = ".foundation-sdk/current/lib/keyos/server" }
+slint-keyos-platform = { path = ".foundation-sdk/current/lib/keyos/slint-keyos-platform/runtime" }
+foundation-themes = { path = ".foundation-sdk/current/lib/keyos/sdk/crates/foundation-themes" }
 
 [build-dependencies]
-foundation-themes = { path = "/Users/kenc/.foundation/sdk/current/lib/keyos/sdk/crates/foundation-themes" }
-slint-keyos-platform-build = { path = "/Users/kenc/.foundation/sdk/current/lib/keyos/slint-keyos-platform/build" }
+slint-keyos-platform-build = { path = ".foundation-sdk/current/lib/keyos/slint-keyos-platform/build" }
