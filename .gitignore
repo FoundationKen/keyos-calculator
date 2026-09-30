@@ -1,4 +1,4 @@
 target/
+.foundation-sdk/
 ui/ui
-resources
 manifest.toml

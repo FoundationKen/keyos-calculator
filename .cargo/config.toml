@@ -1,0 +1,4 @@
+[env]
+FOUNDATION_UI_LIBRARY_PATH = { value = "target/foundation/ui/ui", relative = true }
+FOUNDATION_THEMES_SLINT_DIR = { value = "target/foundation/themes/slint", relative = true }
+FOUNDATION_THEMES_RUST_DIR = { value = "target/foundation/themes/rust", relative = true }
